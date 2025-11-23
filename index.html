@@ -63,6 +63,7 @@
     .contact-form{display:flex;flex-direction:column;gap:8px}
     .contact-form input,.contact-form textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;resize:none;}
     .note{font-size:12px;color:var(--muted);}
+    .status-message { margin-top: 10px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -90,7 +91,6 @@
         <div class="eyebrow">AI • DESIGN • ENGINEERING</div>
         <h2 class="headline">Build faster. Scale smarter. Launch with confidence.</h2>
         <p class="sub">ElevateAI partners with founders to design and build AI-driven products that delight users and drive growth. From prototype to production — we’re your technical co‑founder.</p>
-
         <div class="features">
           <div class="feature">
             <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M12 3v2" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 12h2" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19v2" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h2" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -114,7 +114,6 @@
             </div>
           </div>
         </div>
-
         <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
           <button class="btn btn-primary" onclick="requestProposal()">Request a Proposal</button>
           <button class="btn" onclick="viewWork()">View Work</button>
@@ -123,10 +122,9 @@
 
       <aside class="right-card">
         <div class="panel appear delay-2">
-          <div class="stat"><div><small>Typical sprint</small><br/><strong>2–3 weeks</strong></div><small>Iteration-based delivery</small></div>
+          <div class="stat"><div><small>Typical sprint</small><br/><strong>2–3 weeks</strong></div><small>Iteration‑based delivery</small></div>
           <div class="stat" style="margin-top:10px"><div><small>Avg MVP time</small><br/><strong>8–12 weeks</strong></div><small>From concept to launch</small></div>
         </div>
-
         <div class="panel appear delay-3">
           <h4 style="margin-top:0">Services</h4>
           <div class="grid">
@@ -169,7 +167,6 @@
           <button class="btn btn-primary" onclick="openForm()">Book Consultation</button>
         </div>
       </div>
-
       <div style="margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
         <div style="min-width:220px">
           <strong>Trusted by startups & founders</strong>
@@ -186,10 +183,11 @@
     <section style="margin-top:18px" class="panel appear delay-3">
       <h3 style="margin-top:0">Contact</h3>
       <p class="note">Send a short message and we'll get back within 24–48 hours.</p>
-      <form id="contact" class="contact-form" onsubmit="submitContact(event)">
-        <input id="email" type="email" placeholder="Your email*" required />
-        <textarea id="message" placeholder="Your message*" required></textarea>
+      <form id="contact-form" class="contact-form">
+        <input type="email" name="user_email" placeholder="Your email*" required />
+        <textarea name="message" placeholder="Your message*" required></textarea>
         <button class="btn btn-primary" type="submit">Send</button>
+        <div id="status" class="status-message"></div>
       </form>
       <p class="note" style="margin-top:8px">Or email us at <strong>admin@elevateai.co.in</strong></p>
     </section>
@@ -200,39 +198,49 @@
     </footer>
   </div>
 
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // Initialize EmailJS with your public key :contentReference[oaicite:0]{index=0}
+    (function(){
+      emailjs.init("YOUR_PUBLIC_KEY");
+    })();
 
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = 'Sending…';
+
+      // Send the form using EmailJS :contentReference[oaicite:1]{index=1}
+      emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+          statusDiv.textContent = 'Message sent ✅';
+          // optionally clear the form
+          event.target.reset();
+        }, function(error) {
+          console.log('FAILED...', error);
+          statusDiv.textContent = 'Oops, something went wrong. Try again later.';
+        });
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
     function openForm(){
-      const el = document.getElementById('email');
+      const el = document.querySelector('input[name="user_email"]');
       el.focus();
       window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
     }
-
-    function submitContact(e){
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const message = document.getElementById('message').value;
-
-      const subject = encodeURIComponent("Contact Form Message");
-      const body = encodeURIComponent(`Email: ${email}\n\nMessage:\n${message}`);
-
-      window.location.href = `mailto:admin@elevateai.co.in?subject=${subject}&body=${body}`;
-    }
-
     function requestProposal(){
       openForm();
-      const email = document.getElementById('email');
-      email.placeholder = 'Enter email to request a proposal';
+      document.querySelector('input[name="user_email"]').placeholder = 'Enter email to request a proposal';
     }
-
     function viewWork(){
       alert('Redirecting to portfolio or work samples...');
     }
-
     document.addEventListener('DOMContentLoaded', ()=>{
       document.querySelectorAll('.appear').forEach((n,i)=>{n.style.animationDelay = (i*80)+'ms'})
-    })
+    });
   </script>
 </body>
 </html>
