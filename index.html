@@ -60,8 +60,8 @@
     .delay-2{animation-delay:.16s}
     .delay-3{animation-delay:.24s}
     @keyframes fadeUp{to{opacity:1;transform:none}}
-    .contact-form{display:flex;gap:8px}
-    .contact-form input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .contact-form{display:flex;flex-direction:column;gap:8px}
+    .contact-form input,.contact-form textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;resize:none;}
     .note{font-size:12px;color:var(--muted);}
   </style>
 </head>
@@ -188,6 +188,7 @@
       <p class="note">Send a short message and we'll get back within 24–48 hours.</p>
       <form id="contact" class="contact-form" onsubmit="submitContact(event)">
         <input id="email" type="email" placeholder="Your email*" required />
+        <textarea id="message" placeholder="Your message*" required></textarea>
         <button class="btn btn-primary" type="submit">Send</button>
       </form>
       <p class="note" style="margin-top:8px">Or email us at <strong>admin@elevateai.co.in</strong></p>
@@ -210,8 +211,13 @@
 
     function submitContact(e){
       e.preventDefault();
-      const mail = document.getElementById('email').value;
-      window.location.href = `mailto:admin@elevateai.co.in?subject=Consultation%20Request&body=Please%20contact%20me%20at%20${encodeURIComponent(mail)}`;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+
+      const subject = encodeURIComponent("Contact Form Message");
+      const body = encodeURIComponent(`Email: ${email}\n\nMessage:\n${message}`);
+
+      window.location.href = `mailto:admin@elevateai.co.in?subject=${subject}&body=${body}`;
     }
 
     function requestProposal(){
@@ -222,7 +228,6 @@
 
     function viewWork(){
       alert('Redirecting to portfolio or work samples...');
-      // Here you can replace alert with actual redirect, e.g., window.location.href = 'portfolio.html';
     }
 
     document.addEventListener('DOMContentLoaded', ()=>{
