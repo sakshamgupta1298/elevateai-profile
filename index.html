@@ -63,7 +63,7 @@
     .contact-form{display:flex;flex-direction:column;gap:8px}
     .contact-form input,.contact-form textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;resize:none;}
     .note{font-size:12px;color:var(--muted);}
-    .status-message { margin-top: 10px; font-size: 14px; }
+    .status-message { margin-top: 10px; font-size: 14px; color: #6ee7b7; }
   </style>
 </head>
 <body>
@@ -157,29 +157,6 @@
       </aside>
     </section>
 
-    <section class="panel appear delay-2">
-      <div class="cta-strip">
-        <div>
-          <strong>Ready to build something great?</strong>
-          <div class="note">Book a free consultation and get a tailored roadmap for your product.</div>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-primary" onclick="openForm()">Book Consultation</button>
-        </div>
-      </div>
-      <div style="margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-        <div style="min-width:220px">
-          <strong>Trusted by startups & founders</strong>
-          <div class="note">We ship fast, transparently, and with quality.</div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:center">
-          <svg width="110" height="28" viewBox="0 0 110 28" fill="none"><rect width="110" height="28" rx="6" fill="rgba(255,255,255,0.02)"/></svg>
-          <svg width="110" height="28" viewBox="0 0 110 28" fill="none"><rect width="110" height="28" rx="6" fill="rgba(255,255,255,0.02)"/></svg>
-          <svg width="110" height="28" viewBox="0 0 110 28" fill="none"><rect width="110" height="28" rx="6" fill="rgba(255,255,255,0.02)"/></svg>
-        </div>
-      </div>
-    </section>
-
     <section style="margin-top:18px" class="panel appear delay-3">
       <h3 style="margin-top:0">Contact</h3>
       <p class="note">Send a short message and we'll get back within 24–48 hours.</p>
@@ -201,23 +178,24 @@
   <!-- EmailJS SDK -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
-    // Initialize EmailJS with your public key :contentReference[oaicite:0]{index=0}
-    (function(){
-      emailjs.init("YOUR_PUBLIC_KEY");
-    })();
+    emailjs.init("w8dE4wks_LL7IEsjj"); // replace with your EmailJS public key
 
     document.getElementById('contact-form').addEventListener('submit', function(event) {
       event.preventDefault();
-
       const statusDiv = document.getElementById('status');
       statusDiv.textContent = 'Sending…';
 
-      // Send the form using EmailJS :contentReference[oaicite:1]{index=1}
-      emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+      // Send form with fixed subject
+      const templateParams = {
+        user_email: this.user_email.value,
+        message: this.message.value,
+        subject: "Consultation Request"
+      };
+
+      emailjs.send('service_6x39l94', 'service_6x39l94', templateParams)
         .then(function(response) {
           console.log('SUCCESS!', response.status, response.text);
           statusDiv.textContent = 'Message sent ✅';
-          // optionally clear the form
           event.target.reset();
         }, function(error) {
           console.log('FAILED...', error);
@@ -226,18 +204,22 @@
     });
 
     document.getElementById('year').textContent = new Date().getFullYear();
+
     function openForm(){
       const el = document.querySelector('input[name="user_email"]');
       el.focus();
       window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
     }
+
     function requestProposal(){
       openForm();
       document.querySelector('input[name="user_email"]').placeholder = 'Enter email to request a proposal';
     }
+
     function viewWork(){
       alert('Redirecting to portfolio or work samples...');
     }
+
     document.addEventListener('DOMContentLoaded', ()=>{
       document.querySelectorAll('.appear').forEach((n,i)=>{n.style.animationDelay = (i*80)+'ms'})
     });
